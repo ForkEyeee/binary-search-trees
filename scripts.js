@@ -5,7 +5,7 @@ class Node {
     this.right = right
   }
 }
-const root = null
+let root = null
 class Tree {
   constructor(arr) {
     this.arr = arr
@@ -13,16 +13,21 @@ class Tree {
 
   buildTree(arr = this.sortArray(this.arr), start = 0, end = arr.length - 1) {
     if (start > end) {
-      return null
+      // console.log(`Returning null: start (${start}) > end (${end})`);
+      return null;
     }
-    const sortedArray = this.sortArray(this.arr)
-    let mid = Math.ceil((start + end) / 2)
-    const node = new Node(sortedArray[mid])
-    node.left = this.buildTree(sortedArray, start, mid - 1)
-    node.right = this.buildTree(sortedArray, mid + 1, end)
-    console.log(node)
-    return node
-  }
+    const sortedArray = this.sortArray(this.arr);
+    let mid = Math.floor((start + end) / 2);
+    const node = new Node(sortedArray[mid]);
+    // console.log(`Creating node with data: ${node.data}`);
+    // console.log(`Creating left child: start (${start}), end (${mid - 1})`);
+    node.left = this.buildTree(sortedArray, start, mid - 1);
+    // console.log(`Creating right child: start (${mid + 1}), end (${end})`);
+    node.right = this.buildTree(sortedArray, mid + 1, end);
+    // console.log(node);
+    return node;
+}
+
   sortArray(array) {
     const sortedArray = this.mergeSort(array)
     let uniqueSortedArray = [...new Set(sortedArray)]
@@ -48,7 +53,7 @@ class Tree {
     return arr.concat(firstHalf.slice().concat(secondHalf.slice()))
   }
 
-  prettyPrint = (node = this.buildTree(), prefix = '', isLeft = true) => {
+  prettyPrint (node = this.buildTree(), prefix = '', isLeft = true) {
     if (node === null) {
       return
     }
@@ -63,8 +68,14 @@ class Tree {
     if (node.left !== null) {
       this.prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true)
     }
+		const arr = this.arr
+		const n = arr.length
+		root = this.buildTree(this.arr, 0, n - 1);
   }
+	insert(value) {
+
+	}
 }
 
-const test = new Tree([3, 1, 4, 2,7,8,2,3,2,1,2,9,5,4,6])
+const test = new Tree([1,2,3,4,5])
 test.prettyPrint()
