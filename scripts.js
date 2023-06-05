@@ -6,11 +6,16 @@ class Node {
   }
 }
 class Tree {
+	root = null
   constructor(arr) {
     this.arr = arr
-  }
+		const array = this.arr
+    const n = array.length
+	
+    this.root = this.buildTree(this.arr, 0, n - 1)
+	}
 
-  root = null
+ 
 
   buildTree(arr = this.sortArray(this.arr), start = 0, end = arr.length - 1) {
     if (start > end) {
@@ -64,9 +69,7 @@ class Tree {
     if (node.left !== null) {
       this.prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true)
     }
-    const arr = this.arr
-    const n = arr.length
-    this.root = this.buildTree(this.arr, 0, n - 1)
+
   }
   insert(value) {
 		const newNode = new Node(value)
@@ -83,9 +86,14 @@ class Tree {
 		} else {
 			currentNode.right = newNode
 		}
+		this.arr.push(value)
+		const sortedArray = this.sortArray(this.arr)
+		this.buildTree(sortedArray, 0, sortedArray.length - 1)
+		this.prettyPrint()
   }
+
 }
 
 const test = new Tree([2, 4, 6, 8, 10])
-test.prettyPrint()
+// test.prettyPrint()
 test.insert(3)
