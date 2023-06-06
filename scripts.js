@@ -5,56 +5,24 @@ class Node {
     this.right = right
   }
 }
+
 class Tree {
-	root = null
   constructor(arr) {
-    this.arr = arr
-		const array = this.arr
-    const n = array.length
-	
-    this.root = this.buildTree(this.arr, 0, n - 1)
-	}
+    this.root = this.buildTree(arr)
+  }
 
- 
-
-  buildTree(arr = this.sortArray(this.arr), start = 0, end = arr.length - 1) {
+  buildTree(arr, start = 0, end = arr.length - 1) {
     if (start > end) {
       return null
     }
-    const sortedArray = this.sortArray(this.arr)
     let mid = Math.floor((start + end) / 2)
-    const node = new Node(sortedArray[mid])
-    node.left = this.buildTree(sortedArray, start, mid - 1)
-    node.right = this.buildTree(sortedArray, mid + 1, end)
+    const node = new Node(arr[mid])
+    node.left = this.buildTree(arr, start, mid - 1)
+    node.right = this.buildTree(arr, mid + 1, end)
     return node
   }
 
-  sortArray(array) {
-    const sortedArray = this.mergeSort(array)
-    let uniqueSortedArray = [...new Set(sortedArray)]
-    return uniqueSortedArray
-  }
-  mergeSort(arr) {
-    if (arr.length === 1) {
-      return arr
-    }
-    let half = Math.ceil(arr.length / 2)
-    let firstHalf = arr.slice(0, half)
-    let secondHalf = arr.slice(half)
-    return this.merge(this.mergeSort(firstHalf), this.mergeSort(secondHalf))
-  }
-  merge(firstHalf, secondHalf) {
-    const arr = []
-    while (firstHalf.length && secondHalf.length)
-      if (firstHalf[0] <= secondHalf[0]) {
-        arr.push(firstHalf.shift())
-      } else {
-        arr.push(secondHalf.shift())
-      }
-    return arr.concat(firstHalf.slice().concat(secondHalf.slice()))
-  }
-
-  prettyPrint(node = this.buildTree(), prefix = '', isLeft = true) {
+  prettyPrint(node = this.root, prefix = '', isLeft = true) {
     if (node === null) {
       return
     }
@@ -69,31 +37,83 @@ class Tree {
     if (node.left !== null) {
       this.prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true)
     }
-
   }
-  insert(value) {
-		const newNode = new Node(value)
-    let currentNode = this.root
-    while (currentNode.left !== null || currentNode.right !== null) {
-      if (currentNode.left !== null && value > currentNode.left.data) {
-        currentNode = currentNode.left
+
+  insert(value, node = this.root) {
+    if (this.root === null) {
+      this.root = new Node(value)
+      return
+    }
+    if (value < node.data) {
+      if (node.left === null) {
+        node.left = new Node(value)
       } else {
-        currentNode = currentNode.right
+        this.insert(value, node.left)
+      }
+    } else {
+      if (node.right === null) {
+        node.right = new Node(value)
+      } else {
+        this.insert(value, node.right)
       }
     }
-		if(value < currentNode.data) {
-			currentNode.left = newNode
-		} else {
-			currentNode.right = newNode
-		}
-		this.arr.push(value)
-		const sortedArray = this.sortArray(this.arr)
-		this.buildTree(sortedArray, 0, sortedArray.length - 1)
-		this.prettyPrint()
   }
 
+  minValue(node) {
+    let current = node
+    while (current.left !== null) {
+      current = current.left
+    }
+    return current.data
+  }
+
+  delete(value) {
+    this.root = this.deleteRec(this.root, value)
+  }
+
+  deleteRec(node, key) {
+    if (node === null) {
+      return node
+    }
+    if (key < node.data) {
+      node.left = this.deleteRec(node.left, key)
+    } else if (key > node.data) {
+      node.right = this.deleteRec(node.right, key)
+    } else {
+      if (node.left === null) {
+        return node.right
+      } else if (node.right === null) {
+        return node.left
+      }
+      node.data = this.minValue(node.right)
+      node.right = this.deleteRec(node.right, node.data)
+    }
+    return node
+  }
+	find(key, currentNode = this.root) {
+		if (currentNode === null) {
+			return null;  // If the tree is empty or we've hit a leaf node, the key is not present.
+		}
+		if (key === currentNode.data) {
+			return currentNode;  // We've found the key.
+		} else if (key < currentNode.data) {
+			return this.find(key, currentNode.left);  // The key must be in the left subtree.
+		} else {  // key > currentNode.data
+			return this.find(key, currentNode.right);  // The key must be in the right subtree.
+		}
+	}
+
+	levelOrder(fn){
+		if(this.root === null) {
+			return null
+		}
+		let queue = []; // create a new queue
+		let result = []; // to store the nodes in BFS order
+
+		queue.push(this.root); // enqueue the root node
+
+	}
 }
 
 const test = new Tree([2, 4, 6, 8, 10])
-// test.prettyPrint()
-test.insert(3)
+test.find(4)
